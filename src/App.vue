@@ -10,11 +10,21 @@
           <ChatMessage :myContent="message.text" />
         </li>
       </ul>
-
+      <ul class="chat" v-if="typing">
+        <li>
+          <img
+            src="./assets/loading.gif"
+            alt="typing"
+            width="40"
+            class="typing"
+          />
+        </li>
+      </ul>
       <div class="sugest-wrapper" v-if="messages != []">
         <div
           class="btn"
           v-for="(btn, index) in messages[messages.length - 1].suggestion"
+          @click="createUserMessage(btn)"
           :key="index"
         >
           {{ btn }}
@@ -59,7 +69,11 @@ export default {
       });
     },
     fetchData(myData) {
+      this.typing = true;
       let unifiedData = myData.toLowerCase().trim();
+      unifiedData = unifiedData
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
       axios
         .post("https://robot.hurtis.sk", {
           question: unifiedData,
@@ -67,6 +81,7 @@ export default {
         })
         .then((response) => {
           this.createBotMessage(response.data);
+          this.typing = false;
         })
         .catch((error) => {
           let errorMsg = {

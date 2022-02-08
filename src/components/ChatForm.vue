@@ -19,8 +19,10 @@ export default {
   },
   methods: {
     formSubmited() {
-      this.$emit("formSent", this.myText);
-      this.myText = "";
+      if (this.myText != "") {
+        this.$emit("formSent", this.myText);
+        this.myText = "";
+      }
     },
   },
 };
